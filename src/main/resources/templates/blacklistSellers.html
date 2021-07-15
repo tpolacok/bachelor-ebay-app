@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{blacklist.title}"></title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('blacklist')"></th:block>
+	
+	<div class="container">
+	
+		<div class="row row-selection">
+			<select class="selectpicker" data-width="fit" onchange="location = this.value">
+				<option th:selected="true" th:text="#{blacklist.sellers}"></option>
+				<option th:value="${global} ? @{/blacklist/items} : @{'/search/blacklist/items/' + ${search.id}}" th:text="#{blacklist.items}"></option>
+			</select>
+		</div>
+		<br>
+		<h4 th:if="${global}" th:text="#{blacklist.global}"></h4>
+		<h4 th:unless="${global}" th:text="#{blacklist.local}+' '+${search.name}"></h4>
+		<div th:if="${page.numberOfElements > 0}" class="row row-selection">
+			<ul class="pagination pagination-lg" style="float:right">
+				<li class="page-item" th:each="cnt: ${sizes}" th:classappend="${!displayCount.displayAll && displayCount.pageSize == cnt}? 'active' : '' ">
+			    	<a th:if="${global}" th:href="@{/blacklist/sellers(size=${cnt})}" class="page-link" th:text="${cnt}"></a>
+			    	<a th:unless="${global}" th:href="@{'/search/blacklist/sellers/' + ${search.id}(size=${cnt})}" class="page-link" th:text="${cnt}"></a>
+			    </li>
+	            <li class="page-item" th:classappend="${displayCount.displayAll}? 'active' : '' ">
+	               <a th:if="${global}" th:href="@{/blacklist/sellers(all=true)}" class="page-link" th:text="All"></a>
+	               <a th:unless="${global}" th:href="@{'/search/blacklist/sellers/' + ${search.id}(all=true)}" class="page-link" th:text="All"></a>
+	            </li>
+	        </ul>
+        </div>
+        <div class="table-responsive">
+			<table class="table table-hover">
+			  <thead>
+			    <tr>
+			      <th scope="col" th:text="#{blacklist.table.name}"></th>
+			      <th scope="col" th:text="#{blacklist.table.reason}"></th>
+			      <th scope="col" th:text="#{blacklist.table.delete}"></th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr th:each="blacklist,it: ${page.content}" th:classappend="${it.odd} ? bg-primary : bg-dark">
+			      <td th:text="${blacklist.seller.name}"></td>
+			      <td th:text="${blacklist.reason}"></td>
+			      <td>
+			      	<form th:if="${global}" class="form-delete" method="POST" th:action="@{/blacklist/seller/delete/global/{sellerId}(sellerId=${blacklist.seller.name})}"></form>
+			        <form th:unless="${global}" class="form-delete" method="POST" th:action="@{/blacklist/seller/delete/{sellerId}?search={searchId} (sellerId=${blacklist.seller.name}, searchId=${search.id})}"></form> 
+			      	<i class="fas fa-times fa-action-click btn-delete fa-lg"></i>
+			      </td>
+			    </tr>
+			  </tbody>
+			</table> 
+		</div>
+        
+        <div th:if="${page.totalPages > 1}">
+	          <ul class="pagination pagination-lg">
+	         	 <li th:if="${page.hasPrevious()}" class="page-item">
+			        <a th:if="${global}" th:href="@{/blacklist/sellers(page=${page.number-1})}" class="page-link">«</a>
+			        <a th:unless="${global}" th:href="@{'/search/blacklist/sellers/' + ${search.id}(page=${page.number-1})}" class="page-link">«</a>
+			    </li>
+			    
+			    <li th:if="${page.number != 0}"  class="page-item">
+			    	<a th:if="${global}" th:href="@{/blacklist/sellers(page=0)}" th:text="1" class="page-link"></a>
+			    	<a th:unless="${global}" th:href="@{'/search/blacklist/sellers/' + ${search.id}(page=0)}" th:text="1" class="page-link"></a>
+			    </li>
+			    
+			    <li class="page-item active">
+			    	<a th:if="${global}" th:href="@{/blacklist/sellers(page=${page.number})}" th:text="${page.number + 1}" class="page-link"></a>
+			    	<a th:unless="${global}" th:href="@{'/search/blacklist/sellers/' + ${search.id}(page=${page.number})}" th:text="${page.number + 1}" class="page-link"></a>
+			    </li>
+			    
+			    <li th:if="${page.number != (page.totalPages - 1)}" class="page-item">
+			    	<a th:if="${global}" th:href="@{/blacklist/sellers(page=${page.totalPages - 1})}" th:text="${page.totalPages}" class="page-link"></a>
+			    	<a th:unless="${global}" th:href="@{'/search/blacklist/sellers/' + ${search.id}(page=${page.totalPages - 1})}" th:text="${page.totalPages}" class="page-link"></a>
+			    </li>
+
+			    <li th:if="${page.hasNext()}" class="page-item">
+			        <a th:if="${global}" th:href="@{/blacklist/sellers(page=${page.number+1})}" class="page-link">»</a>
+			        <a th:unless="${global}" th:href="@{'/search/blacklist/sellers/' + ${search.id}(page=${page.number+1})}" class="page-link">»</a>
+			    </li>
+	          </ul>
+        </div>
+        
+        
+        
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+</body>
+<script>
+	$('.btn-delete').click(function(event) {
+		$(this).siblings('form.form-delete').submit();
+	});
+</script>
+</html>

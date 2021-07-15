@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{item.detail.title}"></title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('')"></th:block>
+	
+	<div class="container">
+		<h2 th:text="${item.title}"></h2>
+		<h4 th:text="${item.subtitle}"></h4>
+		<a th:href="${item.itemUrl}" class="item-view-ebay-link" th:text="#{item.detail.ebay.link}"></a>
+	
+		<div class="row">
+			<div class="col-md-12">
+				<table style="width:70%">
+					<tr th:if="${item.buyItNow}">
+						<td><p class="item-view-buy-it-now" th:text="#{item.detail.buy.it.now.price}"></p></td>
+						<td><p class="item-view-buy-it-now-value" th:text="${#numbers.formatDecimal( item.buyItNowPrice, 0, 2)} + ' ' + ${item.currency.value}"></p></td>
+					</tr>
+					<tr>
+						<td><p class="item-view-info" th:text="#{item.detail.primary.category}"></p></td>
+						<td><p class="item-view-info-value" th:text="${item.primaryCategory}"></p></td>
+						<td style="width:20%"></td>
+						<td><p class="item-view-info" th:text="#{item.detail.shipping.type}"></p></td>
+						<td><p class="item-view-info-value" th:text="${item.shipping.shippingType.type}"
+							data-toggle="tooltip" data-placement="top" th:attr="data-original-title=${item.shipping.shippingType.description}"></p></td>
+					</tr>
+					<tr>
+						<td><p class="item-view-info" th:text="#{item.detail.location}"></p></td>
+						<td><p class="item-view-info-value" th:text="${item.country.name}"></p></td>
+						<td style="width:20%"></td>
+						<td><p class="item-view-info" th:text="#{item.detail.shipping.cost}"></p></td>
+						<td>
+							<p class="item-view-info-value" th:if="${(item.shipping.shippingType.type == 'FreePickup') || (item.shipping.shippingType.type == 'Free')}" th:text="'None'"></p>
+							<p class="item-view-info-value" th:if="${(item.shipping.shippingType.type != 'FreePickup') && (item.shipping.shippingType.type != 'Free') && (item.shipping.shippingCost == null)}" th:text="'Varies'"></p>
+							<p class="item-view-info-value" th:if="${(item.shipping.shippingType.type != 'FreePickup') && (item.shipping.shippingType.type != 'Free') && (item.shipping.shippingCost != null)}" th:text="${#numbers.formatDecimal( item.shipping.shippingCost, 0, 2)} + ' ' + ${item.currency.value}"></p>
+						</td>
+					</tr>
+					<tr th:if="${item.condition}">
+						<td><p class="item-view-info" th:text="#{item.detail.condition}"></p></td>
+						<td>
+							<p class="item-view-info-value" th:text="${item.condition.state}" data-toggle="tooltip" data-placement="top" th:attr="data-original-title=${item.condition.description}"></p>
+						</td>
+					</tr>
+					<tr>
+						<td><p class="item-view-info" th:text="#{item.detail.seller}"></p></td>
+						<td><p class="item-view-info-value" th:text="${item.seller.name}"></p></td>
+					</tr>
+					<tr>
+						<td><p class="item-view-info" th:text="#{item.detail.returns.accepted}"></p></td>
+						<td>
+							<p class="item-view-info-value">
+								<i th:if="${item.returnsAccepted}" class="fas fa-check fa-lg"></i>
+								<i th:unless="${item.returnsAccepted}" class="fas fa-times fa-lg"></i>
+							</p>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-md-12">
+				<table style="width:70%">
+				<tr>
+					<td><p class="item-view-buy-it-now" th:text="#{item.detail.time.start}"></p></td>
+					<td><p class="item-view-buy-it-now-value" th:text="${#dates.format(item.startTime, 'dd.MM.yyyy HH:mm')}"></p></td>
+					<td style="width:30%"></td>
+					<td><p th:if="${item.sellingStatus.bidCount != null}" class="item-view-info" th:text="#{item.detail.bids}"></p></td>
+					<td><p th:if="${item.sellingStatus.bidCount != null}"class="item-view-info-value" th:text="${item.sellingStatus.bidCount}"></p></td>
+				</tr>
+				<tr>
+					<td><p class="item-view-buy-it-now" th:text="#{item.detail.time.end}"></p></td>
+					<td><p class="item-view-buy-it-now-value" th:text="${#dates.format(item.endTime, 'dd.MM.yyyy HH:mm')}"></p></td>
+					<td style="width:30%"></td>
+					<td><p class="item-view-info" th:text="#{item.detail.current.price}"></p></td>
+					<td><p class="item-view-info-value" th:text="${#numbers.formatDecimal( item.sellingStatus.currentPrice, 0, 2)} + ' ' + ${item.currency.value}"></p></td>
+				</tr>
+				</table>
+			</div>
+		</div>
+		<hr>
+<!-- 		<div id="description"> -->
+<!-- 			<p class="item-view-buy-it-now">Description:</p> -->
+<!-- 			<div th:remove="tag" th:utext="${item.description}"></div> -->
+<!-- 		</div> -->
+		
+		<hr>
+		
+<!-- 		Gallery -->
+		
+		<th:block th:if="${item.pictures.size()} > 0">
+			<div id="gallery" style="display:none;">
+				<th:block th:each="picture : ${item.pictures}">
+					<img alt="" th:src="@{/images/{pictureId}(pictureId=${picture.id})}" th:attr="data-image=@{/images/{pictureId}(pictureId=${picture.id})}" data-description="">
+				</th:block>			
+			</div>
+		</th:block>
+		
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#archiveModal" th:text="#{item.detail.archive.button}">
+		</button>
+		
+<!-- 		Bids -->
+		<th:block th:if="${item.bids.size()} > 0">
+			<div class="chartDiv">
+				<canvas id="myChart" width="200px" height="200px" style="max-width:900px"></canvas>
+			</div>
+		</th:block>
+		
+		<div class="modal fade" id="archiveModal" tabindex="-1" role="dialog" aria-labelledby="Archive modal" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" th:text="#{item.detail.archive.modal.title}"></h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+			      <div class="modal-body">
+			     	 	<div class="alert alert-dismissible alert-info">
+			               <button type="button" class="close" data-dismiss="alert">×</button>
+			               <strong th:text="#{item.detail.archive.modal.message}"></strong>
+			            </div>
+			            
+			            <div class="form-group">
+		                  <div class="custom-control custom-radio">
+		                    <input type="radio" id="categoryRadioNew" name="customRadio" class="custom-control-input" checked="">
+		                    <label class="custom-control-label" for="categoryRadioNew" th:text="#{item.detail.archive.modal.category.new}"></label>
+		                  </div>
+		                  <div class="custom-control custom-radio">
+		                    <input type="radio" id="categoryRadioOld" name="customRadio" class="custom-control-input">
+		                    <label class="custom-control-label" for="categoryRadioOld" th:text="#{item.detail.archive.modal.category.old}"></label>
+		                  </div>
+		                </div>
+			            
+				     	<div style="height:20px"></div>
+				     	
+						
+						<div id="pictures">
+							<h6 th:text="#{item.detail.archive.modal.select.pictures}"></h6>
+							<th:block th:each="picture : ${item.pictures}">
+								<img th:value="${picture.id}" th:src="@{/images/{pictureId}(pictureId=${picture.id})}" class="img-archive-select">
+							</th:block>
+						</div>
+						
+						<div style="height:20px"></div>
+						
+						<div id="newCategory">
+							<h6 th:text="#{item.detail.archive.modal.category.new.name}"></h6>
+							<input id="inputCategory" th:title="#{item.detail.archive.modal.category.new.name.title}" type="text" class="form-control bootstrap-tagsinput">
+						</div>
+						
+						<div id="oldCategory" style="display:none">	
+							<h6 th:text="#{item.detail.archive.modal.category.old.select}"></h6>
+							<select id="archiveSelect" class="selectpicker" th:title="#{item.detail.archive.modal.category.old.select.title}"data-live-search="true" data-width="fit" >
+								<th:block th:each="cat : ${categories}">
+									<option th:value="${cat.id}" th:text="${cat.name}"></option>
+								</th:block>
+							</select>
+						</div>	
+
+			      </div>
+			      <div class="modal-footer">
+			        <button  type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{modal.close}"></button>
+			        <button id="archiveButton" type="button" class="btn btn-primary" th:text="#{item.detail.archive.modal.prompt}"></button>
+			      </div>
+			      
+		    </div>
+		  </div>
+		</div>
+		<div class="overlay" id="loading" style="display:none">
+			<i class="icon-centered fas fa-spinner fa-3x fa-spin"></i>
+		</div>
+		
+
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+
+</body>
+
+<script th:inline="javascript">
+var loading = $("#loading");
+var itemId = /*[[${item.id}]]*/;
+$(document).ajaxStart(function () {
+    loading.show();
+});
+
+$(document).ajaxStop(function () {
+    loading.hide();
+});
+/*<![CDATA[*/
+	var context = [[@{/}]];
+/*]]>*/
+
+$("#archiveButton").click(function(){
+	if (!($('.img-archive-select-highlight').length == 0)) {
+		if($('#categoryRadioNew').prop('checked')) {
+			var val = $("#inputCategory").val();
+			if (!val.length == 0) {
+				$.ajax({
+				    url: context + "category/add",
+				    type: 'POST',
+				    data: {categoryName: val},
+				    success: function (categoryId) {
+				    	var picturesArray = [];
+				    	$('.img-archive-select-highlight').each(function(){
+				    		picturesArray.push($(this).attr('value'));
+				    	});
+				    	$.ajax({
+				    		  url: context + "archive",
+				    		  type: 'POST',
+				    		  data: { 
+				    			  pictures : picturesArray,
+				    			  itemId : itemId,
+				    			  categoryId : categoryId
+				    		  },
+				    		  success: function(response) {
+				    		    	$('#archiveModal').modal('hide');
+				    	      }
+				    	});
+				    }
+				});
+			}	
+		} else {
+			if (!($('#oldCategory option:selected').length == 0)) {
+				var categoryId = $("#archiveSelect option:selected").val();
+				var picturesArray = [];
+				$('.img-archive-select-highlight').each(function(){
+					picturesArray.push($(this).attr('value'));
+				});
+				$.ajax({
+					  url: context + "archive",
+					  type: 'POST',
+					  data: { 
+						  pictures : picturesArray,
+						  itemId : itemId,
+						  categoryId : categoryId
+					  },
+					  success: function(response) {
+					    	$('#archiveModal').modal('hide');
+				      }
+				});
+			}
+		}
+	}
+	
+});
+
+$("#categoryRadioNew").change(function(){ 
+	if($(this).prop('checked')) {
+		console.log('a');
+		$("#newCategory").show();
+		$("#oldCategory").hide();
+	}
+});
+
+$("#categoryRadioOld").change(function(){ 
+	if($(this).prop('checked')) {
+		console.log('b');
+		$("#newCategory").hide();
+		$("#oldCategory").show();
+	}
+});
+
+// var $form = $('#archiveForm');
+// $form.on('submit', function(e) {
+//   e.preventDefault();
+//   $.ajax({
+//     url: $form.attr('action'),
+//     type: 'post',
+//     data: $form.serialize(),
+//     success: function(response) {
+//     	$('#archiveModal').modal('hide');
+//     }
+//    });
+// });
+
+$('.img-archive-select').click(function(){
+	$(this).toggleClass('img-archive-select-highlight');
+});
+
+window.onload = function() {
+	
+	
+	if (parseInt(/*[[${item.bids.size()}]]*/) > 0) {
+		var currency = /*[[${item.bidsCurrency.value}]]*/;
+		var dataSet = [];
+		var colors = [];
+		var ratings = [];
+		var labels = [];
+
+		var jump = parseInt(/*[[${item.stepSize}]]*/);
+		var i = 0;
+		/*[# th:each="i : ${#numbers.sequence(item.bids.size() - 1, 0, -1)}"]*/
+			val = parseFloat(/*[[${item.bids[i].price}]]*/);
+			rating = parseInt(/*[[${item.bids[i].rating}]]*/);
+			index = i++;
+			labels.push(i);
+			dataSet.push(val);
+			ratings.push(rating);
+			if (i === 1) {
+				colors.push('yellow');
+			} else {
+				if (/*[[${item.bids[i].automatic}]]*/) {
+					colors.push('red');
+				} else {
+					colors.push('black');
+				}
+			}
+		/*[/]*/
+		var ctx = document.getElementById("myChart");
+		ctx.height = 400;
+		var myChart = new Chart(ctx, {
+		    type: 'bar',
+		    data: {
+		    	labels: labels,
+		        datasets: [{
+		        	label: "Price",
+		        	backgroundColor: colors,
+		            data: dataSet
+		        }]
+		    },
+		    options: {
+		    	maintainAspectRatio: false,
+		    	title: {
+		            display: true,
+		            text: 'Price history'
+		        },
+		        legend: {
+		            display: false,
+		        },
+		        tooltips: {
+		            callbacks: {
+		                label: function(tooltipItem, data) {
+		                	if (ratings[tooltipItem.index] == -1) {
+		                    	return "private " + tooltipItem.yLabel + currency;
+		                	}
+		                	else if (ratings[tooltipItem.index] == 0) {
+		                		return "starting " + tooltipItem.yLabel + currency;
+		                	} else {
+		                		return "rating:" + ratings[tooltipItem.index] + ' ' + tooltipItem.yLabel + currency;
+		                	}
+		                },
+		                title: () => null
+		              
+		            }
+		        },
+		        scales: {
+		        	yAxes: [{
+		                ticks: {
+		                	beginAtZero:true,
+		                    stepSize: jump,
+		                    callback: function(value, index, values) {
+		                        return currency + ' ' + value;
+		                    },
+		                    fontSize: 10
+		        			
+		                },
+		                scaleLabel: {
+		                	display: true,
+		                	labelString: 'Amount (' + currency + ')',
+		                	fontSize: 20
+		                }
+		            }],
+				    xAxes: [{
+				    	barPercentage:	0.3,
+			            ticks: {
+			            	 beginAtZero:true
+			            },
+		                scaleLabel: {
+		                	display: true,
+		                	labelString: 'Bid number',
+		                	fontSize: 15
+		                }
+			        }]
+		        }
+		    }
+		});
+	}
+}
+jQuery("#gallery").unitegallery({
+	slider_enable_text_panel:true,
+	strippanel_enable_handle:false,
+	slider_scale_mode: "down",	
+	
+});
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+})
+</script>
+</html>

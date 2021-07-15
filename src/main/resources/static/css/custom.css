@@ -1,0 +1,319 @@
+@charset "UTF-8";
+
+.btn-delete:hover, .search-delete {
+	color: red;
+	cursor: pointer;
+}
+
+.btn-notification:hover, .search-notification {
+	color: blue;
+}
+
+.btn-update:hover, .search-update {
+	color: yellow;
+}
+
+.btn-activate:hover, .search-activate {
+	color: #24e257;
+}
+
+.btn-blacklist:hover, .search-blacklist {
+	color: #ad0393;
+}
+
+.fa-action-click:hover {
+	cursor: pointer;
+}
+
+.fa-action-click {
+	color: white;
+}
+
+.fa-action-click-search {
+	color: white !important;
+}
+
+.card-search {
+	cursor: pointer;
+}
+
+.card-item {
+	cursor: pointer;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 180px;
+    max-height: 180px;
+}
+
+.div-center {
+    margin-left: auto;
+    margin-right: auto;
+    height: 180px;
+    width: 180px;
+    display : flex;
+  	align-items : center;
+}
+
+.col-info {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.col-bottom {
+	padding-top: 5px;
+}
+
+
+@media only screen and (max-device-width: 400px) {
+	.col-buttons {
+		display: show;
+	}
+}
+
+@media only screen and (min-device-width: 401px) {
+	.col-buttons {
+		display: none;
+	}
+}
+
+.container {
+	margin-top:25px;
+}
+
+.chartDiv {
+  max-width: inherit;
+  max-height: 400px;
+}
+
+.item-view-ebay-link {
+	font-weight:1000;
+	font-size:1.7em;
+	color:blue;
+}
+
+.item-view-table {
+	width: 70%;
+}
+
+.item-view-buy-it-now {
+	font-weight:1000;
+	font-size:1.3em;
+}
+
+.item-view-buy-it-now-value {
+	font-weight:1000;
+	font-size:1.3em;
+	color: black;
+}
+
+.item-view-info {
+	font-weight:1000;
+	font-size:1.1em;
+}
+
+.item-view-info-value {
+	font-weight:1000;
+	font-size:1.2em;
+	color: black;
+}
+
+.validation-message {
+	text-transform: capitalize;
+	color: red;
+}
+
+/* ---- .grid-item ---- */
+
+.grid-sizer, .grid-item {
+  width: 33.333%;
+}
+
+.grid-item img {
+  display: block;
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.overlay{
+    opacity:0.8;
+    background-color:black;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:10000000;
+}
+
+.icon-centered {
+    position:fixed;
+     left: 50%;
+     top:  50%;
+}
+
+.border-image-card {
+    border-color: #dee2e6 !important;
+    border-radius: 5%;'
+}
+
+.card-body-nopadding {
+    padding: 0 !important;
+}
+
+.card-footer-nopadding {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.img-archive {
+	width:318px;
+	height:278px;
+	object-fit: cover;
+	border-top-left-radius: 5%;
+	border-top-right-radius: 5%;
+	cursor: pointer;
+}
+
+.img-archive-select {
+	width:80px;
+	height:80px;
+	object-fit: cover;
+	border-radius: 5%;
+	cursor: pointer;
+	margin-bottom: 3px;
+	transform: scale(0.8);
+}
+
+.img-archive-select-highlight {
+	border-style: solid;
+	border-width: 4px;
+	border-color: #3f920f;
+	transform: scale(1);
+}
+
+.col-archive {
+	min-width:348px;
+}
+
+.fa-ebay:hover {
+	cursor: pointer;
+	color:#08c;
+}
+
+.overlay-archive {
+	background-color: rgba(0, 0, 0, 0.8);
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index:1000;
+}
+
+.centered-archive {
+	position:fixed;
+    left: 50%;
+    top:  50%;
+    transform: translate(-50%, -50%);
+}
+
+.search-disabled {
+	filter: sepia(1);
+}
+
+.row {
+	margin: auto !important;
+}
+
+.row-selection {
+	padding-left:15px;
+}
+
+.dropdown-toggle {
+	margin-bottom: 4px;
+    border-color: gray;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px;
+}
+
+.pagination {
+	border-color: gray;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+}
+
+.btn-create-search {
+	margin-bottom: 4px;
+}
+
+.settings-jumbotron {
+	border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    border-radius: 20px;
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+
+.jumbotron {
+	min-width: 350px;
+}
+
+.div-search {
+	min-width: 300px;
+}
+
+.div-item {
+	min-width: 358px;
+}
+
+.card-item-info {
+	padding-left: 0;
+	padding-right: 0;
+	padding-bottom: 0;
+}
+
+h5 {
+	padding-top: 5px !important
+}
+
+.help-link {
+	font-size: 1rem;
+	font-weight: 900;
+	text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.img-help {
+	max-width:100%;
+	max-heigth:100%
+}
+
+.button-phone {
+	margin-top:10px;
+	margin-bottom:10px;
+}
+
+.phone-hide {
+	display: none;
+}
+
+.btn-group-horizontal {
+	padding-bottom: 4px;
+	padding-left: 15px;
+}
+
+.footer-transparent {
+    position: fixed; 
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 23px;
+    background-color: rgba(111,111,111,0.2);
+}

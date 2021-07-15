@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{search.title}"></title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('search')"></th:block>
+	<div class="container">
+		<br>
+		<div th:if="${disabled}" class="bs-component">
+             <div class="alert alert-dismissible alert-warning">
+               <button type="button" class="close" data-dismiss="alert">×</button>
+               <strong th:text="'Some of the searches have been disabled (will no longer refresh) because too many results were returned,
+                edit your search so it will be enabled again (disabled searches are orange colored)'">
+               </strong>
+             </div>
+        </div>
+		<br><br>
+		
+		<div class="row row-selection">
+			<form action="#" th:action="@{/search/create}" method="GET">
+				<button type="submit" class="btn btn-primary btn-create-search" th:text="#{search.create}"></button>
+			</form>
+		</div>
+		
+		<div th:if="${page.numberOfElements > 0}" class="row row-selection">
+			<ul class="pagination pagination-lg" style="float:right">
+				<li class="page-item" th:each="cnt: ${sizes}" th:classappend="${!displayCount.displayAll && displayCount.pageSize == cnt}? 'active' : '' ">
+			    	<a th:href="@{/search/(size=${cnt})}" class="page-link" th:text="${cnt}"></a>
+			    </li>
+                <li class="page-item" th:classappend="${displayCount.displayAll}? 'active' : '' ">
+                   <a th:href="@{/search(all=true)}" class="page-link" th:text="All"></a>
+                </li>
+	        </ul>
+		</div>
+		
+        <br><br>
+        <div class="row">
+        	<th:block th:each="search : ${page.content}">
+	        	<div class="col-md-4 div-search">
+	        	  <form class="form-view" method="GET" th:action="@{/search/view/{searchId}(searchId=${search.id})}"></form> 	
+	        	  <div class="card text-white bg-primary mb-3 card-search" style="max-width: 20rem;" th:classappend="${search.enabled}? 'bg-primary' : 'bg-warning' ">
+	                <div class="card-header" th:classappend="${search.enabled}? 'bg-dark' : 'bg-warning'">
+	                	<h4 class="card-title" style="margin-bottom: 0.1rem;" th:text="${search.name}"></h4>
+	                </div>
+	                <div class="card-body">
+	                  <p class="card-text" th:text="${search.description}"></p>
+	                </div>
+	                <div class="card-footer">
+	                	<div class = row>
+		                  	<div class="col-4" style="padding-left:0px">
+		                  		<span style="font-weight: bold;" th:text="${#lists.size(search.items)}"></span>
+		                  	</div>
+		                  	<div class="col-8 col-buttons" style="padding-right:0px">
+		                  		<div style="float:right">
+					                <form class="form-update" method="GET" th:action="@{/search/edit/{searchId}(searchId=${search.id})}"></form>
+					                
+					                <span data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.notification}" >
+					                	<i class="fas fa-action-click fa-mobile-alt fa-lg btn-notification" data-toggle="modal" th:attr="data-target='#modal-notification-'+${search.id}"></i>
+					                </span>
+					                <span data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.blacklist}">
+					              		<a th:href="@{'/search/blacklist/sellers/' + ${search.id}}" class="fas fa-eraser fa-action-click fa-lg btn-blacklist"></a>
+					              	</span>
+					              	<span data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.remove}">
+					                	<i class="fas fa-action-click fa-trash-alt fa-lg btn-delete" data-toggle="modal" th:attr="data-target='#modal-remove-'+${search.id}"></i>
+					                </span>
+					                <span class="span-update" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.edit}">
+					                	<i class="fas fa-action-click fa-cog fa-lg btn-update"></i>
+					                </span>
+					                <span th:if="${search.active}" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.activation.pause}">
+					                	<i class="fas fa-action-click fa-pause-circle fa-lg btn-activate" data-toggle="modal" th:attr="data-target='#modal-activate-'+${search.id}"></i>
+                    				</span>
+                    				<span th:unless="${search.active}" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.activation.unpause}">
+                    					<i class="fas fa-action-click fa-play-circle fa-lg btn-activate" data-toggle="modal" th:attr="data-target='#modal-activate-'+${search.id}"></i>		                  		
+		                  			</span>
+		                  		</div>
+		                  	</div>
+		                </div>
+	                </div>
+	              </div>
+	        	</div>
+	        	
+	        	<th:block th:include="fragments/includes :: deleteSearch(${search.id})"></th:block>
+		        <th:block th:include="fragments/includes :: activateSearch(${search.id},${search.active},false)"></th:block>
+		        <th:block th:include="fragments/includes :: notificationSearch(${search})"></th:block>
+	        	
+        	</th:block>
+        </div>
+        
+		<div th:if="${page.totalPages > 1}">
+	          <ul class="pagination pagination-lg">
+	         	 <li th:if="${page.hasPrevious()}" class="page-item">
+			        <a th:href="@{/search(page=${page.number-1},size=${page.size})}" class="page-link">«</a>
+			    </li>
+			    
+			    <li class="page-item" th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${page.number}==${i}? 'active' : '' ">
+			    	<a th:href="@{/search(page=${i},size=${page.size})}" th:text="${i + 1}" class="page-link"></a>
+			    </li>	
+			    
+			    <li th:if="${page.hasNext()}" class="page-item">
+			        <a th:href="@{/search(page=${page.number+1},size=${page.size})}" class="page-link">»</a>
+			    </li>
+	          </ul>
+        </div>
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+</body>
+
+<th:block th:include="fragments/includes :: notificationScript"></th:block>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+var context = [[@{/}]];
+/*]]>*/
+
+	$(document).ready ( function(){
+		var highest = 0;
+		$('.card-search').each(function(){
+			var height = $(this).height();
+			if ( height > highest) {
+				highest = height;
+			}
+		});
+		$('.card-search').each(function(){
+			$(this).height(highest);
+		});
+		$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+		});
+
+	});
+	
+	$('.card').hover(function () {
+		if ($( window ).width() > 400) {
+	    	$(this).find('.col-buttons').show();
+		}
+	  }, 
+	  function () {
+		  if ($( window ).width() > 400) {
+	    	$(this).find('.col-buttons').hide();
+		  }
+	  }
+	);
+	$('.div-search').click(function(event) {
+		$(this).find('form.form-view').submit();
+		event.stopPropagation();
+	});
+	$('.modal').click(function(event) {
+		event.stopPropagation();
+	});
+	$('.btn-delete').click(function(event) {
+		$($(this).attr('data-target')).modal('show');
+		event.stopPropagation();
+	});
+	$('.span-update').click(function(event) {
+		$(this).siblings('form.form-update').submit();
+		event.stopPropagation();
+	});
+	$('.btn-activate').click(function(event) {
+		$($(this).attr('data-target')).modal('show');
+		event.stopPropagation();
+	});
+	$('.btn-blacklist').click(function(event) {
+		event.stopPropagation();
+	});
+	$('.btn-notification').click(function(event) {
+		$($(this).attr('data-target')).modal('show');
+		event.stopPropagation();
+	});
+	
+</script>
+
+</html>

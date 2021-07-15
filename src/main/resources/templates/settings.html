@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Settings</title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('settings')"></th:block>
+	
+	<div class="container">
+		
+		<div class="jumbotron settings-jumbotron">
+			<form th:action="@{/user/preferences}" th:object="${userPreferences}" method="post">
+				<h4>User preferences</h4>
+				<hr>
+				
+				<h5>Search defaults</h5>
+				<hr>
+
+				<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.ebay.site}" th:text="#{search.form.ebay.site}"></h5>
+				<select class="selectpicker fit-width" th:title="#{search.form.title.ebay.site}" data-live-search="true" data-width="fit" th:field="*{ebayCountry}">
+				  	<th:block th:each="ebayCountry : ${ebayCountries}">
+						<option th:value="${ebayCountry.siteId}" th:text="${ebayCountry.siteName}"></option>
+					</th:block>
+				</select>
+			
+				<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.listing.types}" th:text="#{search.form.listing.types}"></h5>
+				<select class="selectpicker" th:title="#{search.form.title.listing.types}" multiple data-live-search="true" data-width="fit" data-selected-text-format="count > 2" data-max-options="3" th:field="*{listingTypes}">
+				  <th:block th:each="listingtype : ${listingtypesall}">
+						<option th:attr="data-subtext=${listingtype.description}" th:value="${listingtype}" th:text="${listingtype.name}"></option>
+				  </th:block>
+				</select>
+				
+				<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.title.shipping.country}" th:text="#{search.form.shipping.country}"></h5>
+				<select class="selectpicker fit-width" th:title="#{search.form.title.shipping.country}" data-live-search="true" data-width="fit" data-selected-text-format="count > 2" th:field="*{shippingTo}">
+				  	<th:block th:each="country : ${countries}">
+						<option th:value="${country.code}" th:text="${country.name}"></option>
+					</th:block>
+				</select>
+				<br>
+				<label th:if="${#fields.hasErrors('listingTypes')}" th:errors="*{listingTypes}" class="validation-message"></label>
+				
+				<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.refresh}" th:text="#{search.form.refresh}"></h5>
+			    <input type="number" class="form-control bootstrap-tagsinput" placeholder="60" th:field="*{refreshTime}">
+			    <label th:if="${#fields.hasErrors('refreshTime')}" th:errors="*{refreshTime}" class="validation-message"></label>
+			    
+				<div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.new.only}" class="custom-control custom-checkbox">
+		          <input type="checkbox" class="custom-control-input" th:field="*{newOnly}" >	
+		          <label class="custom-control-label" th:for="${#ids.prev('newOnly')}" th:text="#{search.form.new.only}"></label>
+		        </div>
+		        
+		        <div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.free.shipping}" class="custom-control custom-checkbox">
+		          <input type="checkbox" class="custom-control-input" th:field="*{freeShippingOnly}" >	
+		          <label class="custom-control-label" th:for="${#ids.prev('freeShippingOnly')}" th:text="#{search.form.free.shipping}"></label>
+		        </div>
+		        
+		        <div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.returns.accepted}" class="custom-control custom-checkbox">
+		          <input type="checkbox" class="custom-control-input" th:field="*{returnsAcceptedOnly}" >	
+		          <label class="custom-control-label" th:for="${#ids.prev('returnsAcceptedOnly')}" th:text="#{search.form.returns.accepted}"></label>
+		        </div>
+		        <br>
+				
+				<div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{settings.preferences.tooltip.notification}" class="custom-control custom-checkbox">
+			       <input type="checkbox" class="custom-control-input" th:field="*{phoneNotificationsDefaults.notificationsEnabled}" >	
+			       <label class="custom-control-label" th:for="${#ids.prev('phoneNotificationsDefaults.notificationsEnabled')}" th:text="#{settings.preferences.notification.enable}"></label>
+			    </div>
+			     
+			    <div id="notificationsSettings">
+			         <div class="custom-control custom-checkbox">
+				       <input type="checkbox" class="custom-control-input" th:field="*{phoneNotificationsDefaults.notificationsAuction}" >	
+				       <label class="custom-control-label" th:for="${#ids.prev('phoneNotificationsDefaults.notificationsAuction')}" th:text="#{settings.preferences.notification.auction}"></label>
+				     </div>
+				     <div class="custom-control custom-checkbox">
+				       <input type="checkbox" class="custom-control-input" th:field="*{phoneNotificationsDefaults.notificationsAuctionBuyItNow}" >	
+				       <label class="custom-control-label" th:for="${#ids.prev('phoneNotificationsDefaults.notificationsAuctionBuyItNow')}" th:text="#{settings.preferences.notification.auction.bin}"></label>
+				     </div>
+				     <div class="custom-control custom-checkbox">
+				       <input type="checkbox" class="custom-control-input" th:field="*{phoneNotificationsDefaults.notificationsBuyItNow}" >	
+				       <label class="custom-control-label" th:for="${#ids.prev('phoneNotificationsDefaults.notificationsBuyItNow')}" th:text="#{settings.preferences.notification.fixed}"></label>
+				     </div>
+				</div>
+		        
+		        <hr>
+		        <h5 th:text="#{settings.preferences.other}"></h5>
+				<hr>
+				
+				<div class="custom-control custom-checkbox">
+			       <input type="checkbox" class="custom-control-input" th:field="*{permanentLogin}" >	
+			       <label class="custom-control-label" th:for="${#ids.prev('permanentLogin')}" th:text="#{settings.preferences.stay.login}"></label>
+			    </div>
+				
+				<div id="timeOutSettings">
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{settings.preferences.tooltip.logout}" th:text="#{settings.preferences.logout}"></h5>
+				    <input type="number" class="form-control bootstrap-tagsinput" placeholder="60" th:field="*{sessionTime}">
+				    <label th:if="${#fields.hasErrors('sessionTime')}" th:errors="*{sessionTime}" class="validation-message"></label>
+			    </div>
+				
+		        <h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{settings.preferences.tooltip.currency}" th:text="#{settings.preferences.currency}">Account currency</h5>
+				<select class="selectpicker fit-width" th:title="#{settings.preferences.title.currency}" data-live-search="true" data-width="fit" data-selected-text-format="count > 3" th:field="*{currency}">
+				  	<th:block th:each="currency : ${currencies}">
+						<option th:value="${currency.value}" th:text="${currency.value}"></option>
+					</th:block>
+				</select>
+				
+				<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{settings.preferences.tooltip.phone}" th:text="#{settings.preferences.phone}"></h5>
+				<button type="button" data-toggle="modal" th:attr="data-target='#modal-phone'" class="btn btn-info button-phone" th:text="#{settings.preferences.phone.add}"></button>
+				
+				<div class="modal fade in" th:id="modal-phone">
+				    <div class="modal-dialog" role="document">
+				      <div class="modal-content">
+				         <div class="modal-header">
+				            <h5 class="modal-title" th:text="#{settings.preferences.phone.modal.title}"></h5>
+				            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				            	<span aria-hidden="true">×</span>
+				            </button>
+				         </div>
+				         <div class="modal-body">
+				             <h6 th:text="#{settings.preferences.phone.modal.message}"></h6>
+						     <input id="phoneNumber" type="text" class="form-control bootstrap-tagsinput" th:placeholder="#{settings.preferences.phone.modal.tooltip.phone.number}">
+						     <button type="button" id="phoneNumberButton" class="btn btn-primary button-phone" th:text="#{settings.preferences.phone.modal.activation.code.request}"></button>
+						     
+						     <div id="phoneActivation" th:classappend="${user.phoneActivationCode == null} ? 'phone-hide' : ''">
+								<h6 th:text="#{settings.preferences.phone.modal.activation.code.input}"></h6>
+								<input id="phoneNumberActivation" type="text" class="form-control bootstrap-tagsinput" th:placeholder="#{settings.preferences.phone.modal.activation.code.input}">
+						     	<button type="button" id="phoneNumberActivationButton" class="btn btn-primary button-phone" th:text="#{settings.preferences.phone.modal.activation.prompt}"></button>
+						     	<p id="activationSuccess" style="font-size: 14px; color: green; display:none" th:text="#{settings.preferences.phone.modal.activation.success}"></p>
+						     	<p id="activationFailure" style="font-size: 14px; color: red; display:none" th:text="#{settings.preferences.phone.modal.activation.fail}"></p>
+							 </div>
+				         </div>
+				      </div>
+				    </div>
+				  </div>
+				
+		        <br>
+		        
+		        <div th:if="${param.preferencesSuccess}">
+					<p style="font-size: 14px; color: green;" th:text="#{settings.preferences.success}"></p>
+				</div>
+				<button type="submit" class="btn btn-primary" th:text="#{settings.preferences.save.prompt}"></button>
+			</form>
+		</div>
+		
+		<div class="jumbotron settings-jumbotron">
+			<form th:action="@{/user/password}" th:object="${password}" method="post">
+				<h4 th:text="#{settings.password.change}"></h4>
+				<hr>
+				<div class="form-group">
+					<input type="password" th:field="*{passwordOld}" th:placeholder="#{settings.password.change.old}" class="form-control bootstrap-tagsinput" /> 
+					<label th:if="${#fields.hasErrors('passwordOld')}" th:errors="*{passwordOld}" class="validation-message"></label>
+				</div>
+				<div class="form-group">
+					<input type="password" th:field="*{passwordNew}" th:placeholder="#{settings.password.change.new}" class="form-control bootstrap-tagsinput" /> 
+					<label th:if="${#fields.hasErrors('passwordNew')}" th:errors="*{passwordNew}" class="validation-message"></label>
+				</div>
+				<div class="form-group">
+					<input type="password" th:field="*{passwordNewSecond}" th:placeholder="#{settings.password.change.new}" class="form-control bootstrap-tagsinput" /> 
+					<label th:if="${#fields.hasErrors('passwordNewSecond')}" th:errors="*{passwordNewSecond}" class="validation-message"></label>
+				</div>
+				<div th:if="${param.passwordSuccess}">
+					<p style="font-size: 20; color: green;" th:text="#{settings.password.change.success}"></p>
+				</div>
+				<button type="submit" class="btn btn-primary" th:text="#{settings.password.change.prompt}"></button>
+			</form>
+		</div>
+		
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+
+</body>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var context = [[@{/}]];
+	/*]]>*/
+
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+	});
+	$(document).ready( function(){
+		if (!$('#phoneNotificationsDefaults\\.notificationsEnabled1').prop('checked')) {
+			$('#notificationsSettings').hide();
+		}
+		if ($('#permanentLogin1').prop('checked')) {
+			$('#timeOutSettings').hide();
+		} else {
+			$('#timeOutSettings').show();
+		}
+	});
+	$('#phoneNotificationsDefaults\\.notificationsEnabled1').change(function() {
+	    if($(this).is(":checked")) {
+	        $('#notificationsSettings').show();
+	    } else {
+	    	$('#notificationsSettings').hide();
+	    }        
+	});
+	$('#permanentLogin1').change(function() {
+	    if($(this).is(":checked")) {
+	        $('#timeOutSettings').hide();
+	    } else {
+	    	$('#timeOutSettings').show();
+	    }        
+	});
+	
+	$('#phoneNumberButton').click(function(){
+		var phone = $('#phoneNumber').val();
+		$.ajax({
+		    url: context + "phone/" + phone,
+		    type: 'post',
+		    success: function(response) {
+		    	$('#phoneActivation').show();
+		    }
+		 });
+	});
+	
+	$('#phoneNumberActivationButton').click(function(){
+		var activation = $('#phoneNumberActivation').val();
+		$.ajax({
+		    url: context + "phone/activate/" + activation,
+		    type: 'post',
+		    success: function(response) {
+		    	if (response == 'success') {
+		    		$('#activationFailure').hide();
+		    		$('#activationSuccess').show();
+		    	} else {
+		    		$('#activationSuccess').hide();
+		    		$('#activationFailure').show();
+		    	}
+		    }
+		 });
+	});
+	
+</script>
+
+</html>

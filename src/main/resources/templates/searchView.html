@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{search.view.title}"></title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('search')"></th:block>
+
+	<div class="container">
+		<div th:if="${search.sellerSearch}" class="bs-component">
+             <div class="alert alert-dismissible alert-warning">
+               <button type="button" class="close" data-dismiss="alert">×</button>
+               <strong th:text="#{search.view.seller}">
+               </strong>
+             </div>
+        </div>
+        <div class="btn-group-horizontal" data-toggle="buttons">
+          <form id="form-update" method="GET" th:action="@{/search/edit/{searchId}(searchId=${search.id})}"></form>
+          <form id="form-blacklist" method="GET" th:action="@{/search/blacklist/sellers/{searchId}(searchId=${search.id})}"></form>
+          
+          <th:block th:include="fragments/includes :: deleteSearch(${search.id})"></th:block>
+          <th:block th:include="fragments/includes :: activateSearch(${search.id},${search.active},true)"></th:block>
+          <th:block th:include="fragments/includes :: notificationSearch(${search})"></th:block>
+
+          
+          <span id="btn-update" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.edit}">
+          	<button type="button" class="btn btn-settings btn-sm bg-dark">
+          		<i class="fas fa-action-click-search fa-cog fa-2x search-update"></i>
+          	</button>
+          </span>
+          <span th:if="${search.active}" id="btn-activate" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.activation.pause}">
+          	<button type="button" class="btn btn-settings btn-sm bg-dark" data-toggle="modal" th:attr="data-target='#modal-activate-'+${search.id}">
+          		<i class="fas fa-action-click-search fa-pause-circle fa-2x search-activate"></i>
+          	</button>
+          </span>
+          
+          <span th:unless="${search.active}" id="btn-activate" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.activation.unpause}">
+          	<button type="button" class="btn btn-settings btn-sm bg-dark" data-toggle="modal" th:attr="data-target='#modal-activate-'+${search.id}">
+          		<i class="fas fa-action-click-search fa-play-circle fa-2x search-activate"></i>
+          	</button>
+          </span>
+            				
+          <span id="btn-delete" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.remove}">
+          	<button type="button" class="btn btn-settings btn-sm bg-dark" data-toggle="modal" th:attr="data-target='#modal-remove-'+${search.id}">
+          		<i class="fas fa-action-click-search fa-trash-alt fa-2x search-delete"></i>
+          	</button>
+          </span>
+          <span id="btn-notification" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.notification}">
+          	<button type="button" class="btn btn-settings btn-sm bg-dark" data-toggle="modal" th:attr="data-target='#modal-notification-'+${search.id}">
+          		<i class="fas fa-action-click-search fa-mobile-alt fa-2x search-notification"></i>
+          	</button>
+          </span>
+          <span id="btn-blacklist" data-toggle="tooltip" data-placement="top" th:title="#{search.tooltip.blacklist}">
+          	<button type="button" class="btn btn-settings btn-sm bg-dark">
+          		<i class="fas fa-action-click-search fa-eraser fa-2x search-blacklist"></i>
+        	</button>
+          </span>
+		</div>
+		
+		<div th:if="${page.numberOfElements > 0}" class="row row-selection">
+			<select class="selectpicker" data-width="fit" onchange="location = this.value">
+			  <option th:selected="${search.searchPreferences.sortBy == T(tomaspolacok.bachelor.application.enums.SortEnum).CURRENT_PRICE && dir == 'ASC'}" th:value="@{'/search/view/' + ${search.id}(sort='sellingStatus.currentPrice',dir='asc')}" >Price Ascending</option>
+			  <option th:selected="${search.searchPreferences.sortBy == T(tomaspolacok.bachelor.application.enums.SortEnum).CURRENT_PRICE && dir == 'DESC'}" th:value="@{'/search/view/' + ${search.id}(sort='sellingStatus.currentPrice',dir='desc')}">Price Descending</option>
+			  <option th:selected="${search.searchPreferences.sortBy == T(tomaspolacok.bachelor.application.enums.SortEnum).BID_COUNT && dir == 'ASC'}" th:value="@{'/search/view/' + ${search.id}(sort='sellingStatus.bidCount',dir='asc')}">Bids Ascending</option>
+			  <option th:selected="${search.searchPreferences.sortBy == T(tomaspolacok.bachelor.application.enums.SortEnum).BID_COUNT && dir == 'DESC'}" th:value="@{'/search/view/' + ${search.id}(sort='sellingStatus.bidCount',dir='desc')}">Bids Descending</option>
+			  <option th:selected="${search.searchPreferences.sortBy == T(tomaspolacok.bachelor.application.enums.SortEnum).BUY_IT_NOW && dir == 'DESC'}" th:value="@{'/search/view/' + ${search.id}(sort='buyItNowPrice',dir='desc')}">Buy It Now Descending</option>
+			  <option th:selected="${search.searchPreferences.sortBy == T(tomaspolacok.bachelor.application.enums.SortEnum).SHIPPING_COST && dir == 'ASC'}" th:value="@{'/search/view/' + ${search.id}(sort='shipping.shippingCost',dir='asc')}">Shipping Ascending</option>
+			  <option th:selected="${search.searchPreferences.sortBy == T(tomaspolacok.bachelor.application.enums.SortEnum).END_TIME && dir == 'ASC'}" th:value="@{'/search/view/' + ${search.id}(sort='endTime',dir='asc')}">End Time Ascending</option>
+			</select>
+		</div>
+		
+		<div class="row row-selection">
+			<select id="listingTypeSelect" class="selectpicker" th:title="#{search.view.listing.types}" multiple data-live-search="true" data-width="fit" data-selected-text-format="count > 3" data-max-options="3">
+			  <th:block th:each="listingtype : ${listingTypes}">
+					<option th:selected="${#sets.contains(search.searchPreferences.listingTypes, listingtype)}" th:attr="data-subtext=${listingtype.description}" th:value="${listingtype}" th:text="${listingtype.name}"></option>
+			  </th:block>
+			</select>
+		</div>
+		
+		<div th:if="${page.numberOfElements > 0}" class="row row-selection">
+			<ul class="pagination pagination-lg" style="float:right">
+				<li class="page-item" th:each="cnt: ${sizes}" th:classappend="${!search.searchPreferences.itemCount.displayAll && search.searchPreferences.itemCount.pageSize == cnt}? 'active' : '' ">
+			    	<a th:href="@{'/search/view/' + ${search.id}(size=${cnt})}" class="page-link" th:text="${cnt}"></a>
+			    </li>
+                <li class="page-item" th:classappend="${search.searchPreferences.itemCount.displayAll}? 'active' : '' ">
+                   <a th:href="@{'/search/view/' + ${search.id}(all=true)}" class="page-link" th:text="All"></a>
+                </li>
+	        </ul>
+		</div>
+		
+		<div class="row row-items">
+        	<th:block th:each="item : ${page.content}">
+	        	<div class="col-md-4 div-item">
+	        	<form class="form-view" method="GET" th:action="@{/item/view/{searchId}/{itemId}(itemId=${item.id},searchId=${search.id})}"></form> 
+	        	<div class="card text-white bg-primary mb-3 card-item" style="max-width: 20rem;">
+	                <div class="card-header bg-dark">
+	                	<div class="div-center">
+	                		<img th:src="${item.defaultPicture}" alt="image" class="border center">
+	                	</div>
+	                </div>
+	                <div class="card-footer card-item-info">
+	                	<div class="row">
+	                		<div class="col col-info">
+	                			<i class="fas fa-dollar-sign fa-lg" style="margin-left:10px"></i>
+	                			<span style="font-weight: bold; padding-left: 5px" th:text="${#numbers.formatDecimal(item.sellingStatus.currentPrice, 0, 2)} + ' ' + ${item.currency.value}"></span>
+	                		</div>
+	                		<div class="col col-info">
+	                			<div th:if="${item.buyItNow}" style="float:right">
+		                			<span style="font-weight: bold; padding-right: 5px" th:text="${#numbers.formatDecimal(item.buyItNowPrice, 0, 2)} + ' ' + ${item.currency.value}"></span>
+		                			<i class="fas fa-at fa-lg" style="margin-right:10px"></i>
+	                			</div>
+	                		</div>
+	                	</div>
+	                	<div class = "row">	
+	                		<div class="col col-info col-bottom">
+	                			<div th:if="${item.sellingStatus.bidCount != null}">
+		                			<i class="fas fa-angle-double-up fa-lg" style="margin-left:10px"></i>
+		                			<span style="font-weight: bold; padding-left: 5px" th:text="${item.sellingStatus.bidCount}"></span>
+	                			</div>
+	                		</div>
+	                		<div class="col col-info col-bottom">
+                				<div th:if="${(item.shipping.shippingCost != null) && (item.shipping.shippingCost != 0.0)}" style="float:right">
+		                			<span style="font-weight: bold; padding-right: 5px" th:text="${#numbers.formatDecimal(item.shipping.shippingCost, 0, 2)} + ' ' + ${item.currency.value}"></span>
+		                			<i class="fas fa-plane fa-lg" style="margin-right:10px"></i>
+	                			</div>
+	                		</div>
+	                	</div>
+	                </div>
+	                <div class="card-body">
+	                  <p class="card-text" th:text="${item.title}"></p>			        
+	                </div>
+	                <div class="card-footer">
+	                	<div class = row>
+		                  	<div class="col-5" style="padding-left:0px">
+		                  		<span style="font-weight: bold;" data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{item.detail.time.end}" 
+		                  		th:text="${#dates.format(item.endTime, 'dd.MM.yyyy HH:mm')}"></span>
+		                  	</div>
+		                  	<div class="col-2">
+		                  		<span>
+	                  				<i class="fab fa-action-click fa-ebay fa-2x" style="padding-top:30%" th:attr="ebay-link=${item.itemUrl}"></i>
+	                  			</span>
+		                  	</div>
+		                  	
+		                  	<div class="col-5" style="padding-right:0px">
+		                  		<div style="float:right; padding-top:7%">
+		                  			<span data-toggle="tooltip" data-placement="left" th:title="#{search.view.blacklist.item}">
+			                  			<i data-toggle="modal" th:attr="data-target='#modal-item-ban-'+${item.id}" class="fas fa-action-click fa-ban btn-ban-item fa-lg btn-delete"></i>
+			                  		</span>
+			                  		<span data-toggle="tooltip" data-placement="left" th:title="#{search.view.blacklist.seller}">
+					            		<i data-toggle="modal" th:attr="data-target='#modal-seller-ban-seller-'+${item.id}" class="fas fa-action-click fa-user-times btn-ban-seller fa-lg btn-delete"></i>
+					            	</span>
+		                  		</div>
+	                  		</div>
+	                  	</div>
+	                </div>
+	              </div>
+	        	</div>
+	        	<div class="modal fade in" th:id="'modal-item-ban-'+${item.id}">
+				   <div class="modal-dialog" role="document">
+				      <div class="modal-content">
+				         <div class="modal-header">
+				            <h5 class="modal-title" th:text="#{search.view.blacklist.modal.item.title}"></h5>
+				            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				            	<span aria-hidden="true">×</span>
+				            </button>
+				         </div>
+				         <div class="modal-body">
+				            <p th:text="#{search.view.blacklist.modal.item.message}"></p>
+				            
+				            <h4 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.view.blacklist.modal.reason.message}" th:text="#{search.view.blacklist.modal.reason}"></h4>
+				            <input type="text" class="form-control">
+				            
+				            <h4 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.view.blacklist.modal.scope.message}" th:text="#{search.view.blacklist.modal.scope}"></h4>
+				            <select class="selectpicker">
+							  <option th:attr="data-subtext=#{search.view.blacklist.modal.scope.global.description}" value="Global" th:text="#{search.view.blacklist.modal.scope.global}"></option>
+							  <option th:attr="data-subtext=#{search.view.blacklist.modal.scope.local.description}" value="Local" th:text="#{search.view.blacklist.modal.scope.local}"></option>
+							</select>
+				         </div>
+				         <div class="modal-footer">
+				         	<form class="form-ban-global" method="POST" th:action="@{/blacklist/item/global/{itemId}?search={searchId}(itemId=${item.id}, searchId=${search.id}) }">
+				         		<input type="hidden" class="form-control" name="reason">
+				         	</form>
+				         	<form class="form-ban-local" method="POST" th:action="@{/blacklist/item/{itemId}?search={searchId}(itemId=${item.id}, searchId=${search.id}) }">
+				         		<input type="hidden" class="form-control" name="reason">
+				         	</form> 
+				            <button type="button" class="btn btn-primary btn-ban" th:text="#{search.view.blacklist.modal.item.prompt}"></button>
+				            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{modal.close}"></button>
+				         </div>
+				      </div>
+				   </div>
+				</div>
+				
+				<div class="modal fade in" th:id="'modal-seller-ban-seller-'+${item.id}">
+				   <div class="modal-dialog" role="document">
+				      <div class="modal-content">
+				         <div class="modal-header">
+				            <h5 class="modal-title" th:text="#{search.view.blacklist.modal.seller.title}"></h5>
+				            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				            	<span aria-hidden="true">×</span>
+				            </button>
+				         </div>
+				         <div class="modal-body">
+				            <p th:text="#{search.view.blacklist.modal.seller.message}"></p>
+				            <h4 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.view.blacklist.modal.reason.message}" th:text="#{search.view.blacklist.modal.reason}"></h4>
+				            <input type="text" class="form-control">
+				          
+				            <h4 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.view.blacklist.modal.scope.message}" th:text="#{search.view.blacklist.modal.scope}"></h4>
+				            <select class="selectpicker">
+							  <option th:attr="data-subtext=#{search.view.blacklist.modal.scope.global.description}" value="Global" th:text="#{search.view.blacklist.modal.scope.global}"></option>
+							  <option th:attr="data-subtext=#{search.view.blacklist.modal.scope.local.description}" value="Local" th:text="#{search.view.blacklist.modal.scope.local}"></option>
+							</select>
+				         </div>
+				         <div class="modal-footer">
+				         	<form class="form-ban-global" th:item method="POST" th:action="@{/blacklist/seller/global/{sellerId}?search={searchId} (sellerId=${item.seller.name}, searchId=${search.id}) }">
+				         		<input type="hidden" class="form-control" name="reason">
+				         	</form>
+				         	<form class="form-ban-local" method="POST" th:action="@{/blacklist/seller/{sellerId}?search={searchId} (sellerId=${item.seller.name}, searchId=${search.id}) }">
+				         		<input type="hidden" class="form-control" name="reason">
+				         	</form> 		
+				            <button type="button" class="btn btn-primary btn-ban" th:text="#{search.view.blacklist.modal.seller.prompt}"></button>
+				            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{modal.close}"></button>
+				         </div>
+				      </div>
+				   </div>
+				</div>
+        	</th:block>
+        </div>
+        <div th:if="${page.totalPages > 1}">
+	          <ul class="pagination pagination-lg">
+	         	 <li th:if="${page.hasPrevious()}" class="page-item">
+			        <a th:href="@{'/search/view/' + ${search.id}(page=${page.number-1})}" class="page-link">«</a>
+			    </li>
+			    
+			    <li th:if="${page.number != 0}" class="page-item">
+			    	<a th:href="@{'/search/view/' + ${search.id}(page=0)}" th:text="1" class="page-link"></a>
+			    </li>	
+			    
+			    <li class="page-item active">
+			    	<a th:href="@{'/search/view/' + ${search.id}(page=${page.number})}" th:text="${page.number + 1}" class="page-link"></a>
+			    </li>
+			    
+			    <li th:if="${page.number != (page.totalPages - 1)}" class="page-item">
+			    	<a th:href="@{'/search/view/' + ${search.id}(page=${page.totalPages - 1})}" th:text="${page.totalPages}" class="page-link"></a>
+			    </li>		
+			    
+			    <li th:if="${page.hasNext()}" class="page-item">
+			        <a th:href="@{'/search/view/' + ${search.id}(page=${page.number+1})}" class="page-link">»</a>
+			    </li>
+	          </ul>
+        </div>
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+
+</body>
+<th:block th:include="fragments/includes :: notificationScript"></th:block>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var context = [[@{/}]];
+	var searchId = [[${search.id}]];
+	/*]]>*/
+	$(document).ready ( function(){
+		var highest = 0;
+		$('.card-item').each(function(){
+			var height = $(this).height();
+			if ( height > highest) {
+				highest = height;
+			}
+		});
+		$('.card-item').each(function(){
+			$(this).height(highest);
+		});
+		$(function () {
+			  $('[data-toggle="tooltip"]').tooltip()
+		});
+		$('.fa-ebay').click(function(){
+			window.location.href = $(this).attr('ebay-link');
+		});
+	});
+	$('#listingTypeSelect').change(function(){
+		if ($('#listingTypeSelect').val().length > 0) {
+			var string = "?listing=true&";
+			$.each($('#listingTypeSelect').val(), function(index, tag) {  
+			  string = string + tag + "=true&";
+			});
+			var loc = context + "search/view/" + searchId + string;
+			window.location.href = loc;
+		}
+	});
+	$('.btn-ban').click(function(){
+		var body = $(this).parent().siblings('.modal-body');
+		var reason = body.find('input').val();
+		var scope = body.find('select').val();
+		var form;
+		if (scope == "Local") {
+			form = $(this).siblings('form.form-ban-local');
+		} else if (scope == "Global") {
+			form = $(this).siblings('form.form-ban-global');
+		}
+		form.find('input').val(reason);
+		form.submit();
+		event.stopPropagation();
+	});
+	$('.div-item').click(function(event) {
+		$(this).find('form.form-view').submit();
+		event.stopPropagation();
+	});
+	$('.fa-action-click').click(function(event) {
+		$($(this).attr('data-target')).modal('show');
+		event.stopPropagation();
+	});
+	
+	$('.btn-settings').hover(
+	  function() {
+		  $(this).find('i').removeClass("fa-action-click-search");
+	  }, function() {
+		  $(this).find('i').addClass("fa-action-click-search");
+	  }
+	);
+	
+	$('#btn-update').click(function(event) {
+		$('#form-update').submit();
+		event.stopPropagation();
+	});
+	
+	$('#btn-blacklist').click(function(event) {
+		$('#form-blacklist').submit();
+		event.stopPropagation();
+	});
+	
+	$('.fa-action-click-search').click(function(event){
+		$(this).parent().click();
+	});
+	
+	$('.btn-form').click(function(){$(this).parent().submit();});
+</script>
+
+</html>

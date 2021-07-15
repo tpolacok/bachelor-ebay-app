@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{register.title}"></title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('')"></th:block>
+	
+	<div class="container">
+		<div class="jumbotron settings-jumbotron">
+			<form autocomplete="off" action="#" th:action="@{/registration}" th:object="${user}" method="post" class="form-horizontal" role="form">
+				<h2 th:text="#{register.form}"></h2>
+				<div class="form-group">
+						<input type="text" th:field="*{email}" th:placeholder="#{register.email}" class="form-control bootstrap-tagsinput" />
+						<label th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="validation-message"></label>
+				</div>
+				<div class="form-group">
+					<input type="password" th:field="*{password}" th:placeholder="#{register.password}" class="form-control bootstrap-tagsinput" /> 
+					<label th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="validation-message"></label>
+				</div>
+	
+				<button type="submit" class="btn btn-primary btn-block" th:text="#{register.submit}"></button>
+				
+			</form>
+			<form th:action="@{/login}" method="get">
+				<button class="btn btn-md btn-warning btn-block" type="Submit" th:text="#{register.to.login}"></button>
+			</form>
+			<span style="color:green" th:utext="${successMessage}"></span>	
+		</div>
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+
+</body>
+</html>

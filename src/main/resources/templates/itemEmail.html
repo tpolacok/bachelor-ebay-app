@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<style>
+	.headlines {
+		font-weight:1000;
+		margin:0;
+		margin-bottom:0.6em;
+		font-size:1.2em
+	}
+	
+	.headlines-first {
+		margin-top:1em;
+	}
+	
+	.text-title {
+		margin:0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	
+	.div-item-wrapper {
+		margin-right:auto;
+		margin-left:auto;
+		display:block;
+	}
+</style>
+<meta charset="UTF-8">
+<title th:text="#{item.email.subject}"></title>
+</head>
+<body>
+	<div class="div-item-wrapper">
+		<div th:each="item : ${items}">
+			<img th:src="${item.defaultPicture}" alt="image" style="width:318px; height:278px; object-fit: cover; border-radius: 5%; border-image:5px">
+			<br>
+			<div>
+		        <p class="text-title" th:text="${item.title}"> </p>
+		        <a th:href="${item.itemUrl}" th:text="#{item.detail.ebay.link}"></a>
+		        <p class="headlines" th:text="#{item.detail.current.price}"></p>
+	            <th:block th:text="${#numbers.formatDecimal( item.sellingStatus.currentPrice, 0, 2)} + ' ' + ${item.currency.value}"></th:block>
+		        <th:block th:if="${item.buyItNow}">
+	               <p class="headlines" th:text="#{item.detail.buy.it.now.price}"></p>
+	               <th:block th:text="${#numbers.formatDecimal(item.buyItNowPrice, 0, 2)} + ' ' + ${item.currency.value}"></th:block>
+	         	</th:block>
+	         	<p class="headlines" th:text="#{item.detail.time.end}"></p>
+	            <th:block th:text="${#dates.format(item.endTime, 'dd.MM.yyyy HH:mm')}"></th:block>
+	            <hr>
+            </div>
+			
+		</div>
+	</div>
+</body>
+</html>

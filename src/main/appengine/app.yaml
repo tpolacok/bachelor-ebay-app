@@ -1,0 +1,25 @@
+runtime: java
+env: flex
+runtime_config:
+  jdk: openjdk8
+env_variables:
+  SPRING_PROFILES_ACTIVE: "gcp"
+handlers:
+- url: /.*
+  script: this field is required, but ignored
+manual_scaling: 
+  instances: 1
+health_check:
+  enable_health_check: False
+  check_interval_sec: 60
+  timeout_sec: 4
+  unhealthy_threshold: 2
+  healthy_threshold: 2
+resources:
+  cpu: 1
+  memory_gb: 2.3
+  disk_size_gb: 10
+  volumes:
+  - name: ramdisk1
+    volume_type: tmpfs
+    size_gb: 0.5

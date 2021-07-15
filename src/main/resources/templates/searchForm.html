@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{search.form.title}"></title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('search')"></th:block>
+	<div class="container" >
+		<div class="jumbotron settings-jumbotron">
+			<div th:if="${errorMessage}" class="bs-component">
+	             <div class="alert alert-dismissible alert-danger">
+	               <button type="button" class="close" data-dismiss="alert">×</button>
+	               <strong th:text="${errorMessage}">error</strong>
+	             </div>
+	        </div>
+			<form id="searchForm" th:action="${update} ? @{/search/edit/{searchId}(searchId=${search.id})} : @{/search/create}" th:object="${search}" method="post">
+				<input type="hidden" th:value="${search.ebayCountry}" th:field="*{ebayCountry}">
+				<input type="hidden" th:value="${search.id}" th:field="*{id}">
+				<input type="hidden" th:value="${search.phoneNotificationSettings}" th:field="*{phoneNotificationSettings}">
+				
+				<div style="padding-left:15px">
+					<h4 th:text="#{search.form}"></h4>
+					<hr>
+					
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.ebay.site}" th:text="#{search.form.ebay.site}"></h5>
+					<select th:if="${update}" class="selectpicker" data-live-search="true" data-width="fit" onchange="location = this.value">
+						<th:block th:each="country : ${ebayCountries}">
+							<option th:selected="${country.siteId == search.ebayCountry.siteId}" th:value="@{/search/edit/{searchId}(searchId=${search.id}, ebaySiteId=${country.siteId})}" th:text="${country.siteName}"></option>
+						</th:block>
+					</select>
+					
+					<select id="ebayCountrySelect" th:unless="${update}" class="selectpicker" data-live-search="true" data-width="fit">
+						<th:block th:each="country : ${ebayCountries}">
+							<option th:selected="${country.siteId == search.ebayCountry.siteId}" th:value="@{/search/create/{ebaySiteId}(ebaySiteId=${country.siteId})}" th:text="${country.siteName}"></option>
+						</th:block>
+					</select>
+					
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.name}" th:text="#{search.form.name}"></h5>
+					<input type="text" class="form-control bootstrap-tagsinput" th:field="*{name}">
+					<label th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="validation-message"></label>
+					
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.description}" th:text="#{search.form.description}"></h5>
+					<input type="text" class="form-control bootstrap-tagsinput" th:field="*{description}">
+					<label th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="validation-message" th:appendclass="error-message"></label>
+					
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.shipping.country}" th:text="#{search.form.shipping.country}"></h5>
+					<select class="selectpicker fit-width" th:title="#{search.form.title.shipping.country}" data-live-search="true" data-width="fit" data-selected-text-format="count > 2" th:field="*{shippingTo}">
+					  	<th:block th:each="country : ${countries}">
+							<option th:value="${country.code}" th:text="${country.name}"></option>
+						</th:block>
+					</select>
+					
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.listing.types}" th:text="#{search.form.listing.types}"></h5>
+					<select class="selectpicker" th:title="#{search.form.title.listing.types}" multiple data-live-search="true" data-width="fit" data-selected-text-format="count > 2" data-max-options="3" th:field="*{listingTypes}">
+					  <th:block th:each="listingtype : ${listingtypesall}">
+							<option th:attr="data-subtext=${listingtype.description}" th:value="${listingtype}" th:text="${listingtype.name}"></option>
+					  </th:block>
+					</select>
+					<br>
+					<label th:if="${#fields.hasErrors('listingTypes')}" th:errors="*{listingTypes}" class="validation-message"></label>
+					
+					<th:block th:if="${search.ebayCountry.categoryEnabled}">
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.categories}" th:text="#{search.form.categories}"></h5>
+						<select class="selectpicker" th:title="#{search.form.title.categories}" multiple data-live-search="true" data-width="fit" data-selected-text-format="count > 2" data-max-options="3" th:field="*{categories}">
+						  <th:block th:each="category : ${categories}">
+								<option th:value="${category.id}" th:text="${category.name}"></option>
+						  </th:block>
+						</select>
+					</th:block>
+		
+					<h5 data-toggle="tooltip" data-placement="left" 
+						th:attr="data-original-title=#{search.form.tooltip.keywords}" th:text="#{search.form.keywords }"></h5>
+					<input type="text" class="form-control bootstrap-tagsinput" th:field="*{keywordsInput}">
+					<label th:if="${#fields.hasErrors('keywordsInput')}" th:errors="*{keywordsInput}" class="validation-message"></label>
+					
+
+					<div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.description.search}" class="custom-control custom-checkbox">
+		               <input type="checkbox" class="custom-control-input" th:field="*{keywordsDescription}" >	
+		               <label class="custom-control-label" th:for="${#ids.prev('keywordsDescription')}" th:text="#{search.form.description.search}"></label>
+		             </div>
+					<br>
+					<label th:if="${#fields.hasErrors('categories')}" th:errors="*{categories}" class="validation-message"></label>
+					
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.sellers}" th:text="#{search.form.sellers}"></h5>
+					<select multiple data-role="tagsinput" th:field="*{sellers}">
+						<th:block th:each="seller : ${search.sellers}">
+							<option th:value="${seller}" th:text="${seller}"></option>
+					  	</th:block>
+					</select>
+				</div>
+				<div class="row">
+					<div class="col-sm-6">
+						<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.time.end.from}" th:text="#{search.form.time.end.from}"></h5>
+						<input th:type="text" class="form-control date bootstrap-tagsinput" th:field="*{endTimeFrom}">
+					</div>
+					<div class="col-sm-6">
+						<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.time.end.to }" th:text="#{search.form.time.end.to}"></h5>
+						<input type="text" class="form-control date bootstrap-tagsinput" th:field="*{endTimeTo}">
+					</div>
+				</div>
+				<label th:if="${#fields.hasErrors('endTimeFrom')}" th:errors="*{endTimeFrom}" class="validation-message"></label>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+					      <h5 th:text="#{search.form.bids.min}"></h5>
+						  <input type="number" class="form-control bootstrap-tagsinput" placeholder="0" th:field="*{minBids}">
+						</div>
+						<label th:if="${#fields.hasErrors('minBids')}" th:errors="*{minBids}" class="validation-message"></label>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+					      <h5 th:text="#{search.form.bids.max}"></h5>
+						  <input type="number" class="form-control bootstrap-tagsinput" placeholder="0" th:field="*{maxBids}">
+						</div>
+						<label th:if="${#fields.hasErrors('maxBids')}" th:errors="*{maxBids}" class="validation-message"></label>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+					      <h5 th:text="#{search.form.price.min} +'(' + ${currency.value} + ')'"></h5>
+						  <input type="number" class="form-control bootstrap-tagsinput" placeholder="0" th:field="*{minPrice}">
+						</div>
+						<label th:if="${#fields.hasErrors('minPrice')}" th:errors="*{minPrice}" class="validation-message"></label>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+					      <h5 th:text="#{search.form.price.max} +'(' + ${currency.value} + ')'"></h5>
+						  <input type="number" class="form-control bootstrap-tagsinput" placeholder="0" th:field="*{maxPrice}">
+						</div>
+						<label th:if="${#fields.hasErrors('maxPrice')}" th:errors="*{maxPrice}" class="validation-message"></label>
+					</div>
+				</div>
+				
+				<div style="padding-left:15px">
+					<h5 data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.refresh}" th:text="#{search.form.refresh}"></h5>
+				    <input type="number" class="form-control bootstrap-tagsinput" placeholder="60" th:field="*{refreshTime}">
+				    <label th:if="${#fields.hasErrors('refreshTime')}" th:errors="*{refreshTime}" class="validation-message"></label>
+					
+					<h5 th:text="#{search.form.other}"></h5>
+					 <div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.new.only}" class="custom-control custom-checkbox">
+		               <input type="checkbox" class="custom-control-input" th:field="*{newOnly}" >	
+		               <label class="custom-control-label" th:for="${#ids.prev('newOnly')}" th:text="#{search.form.new.only}"></label>
+		             </div>
+		             <div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.free.shipping}" class="custom-control custom-checkbox">
+		               <input type="checkbox" class="custom-control-input" th:field="*{freeShippingOnly}" >	
+		               <label class="custom-control-label" th:for="${#ids.prev('freeShippingOnly')}" th:text="#{search.form.free.shipping}"></label>
+		             </div>
+		             <div data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{search.form.tooltip.returns.accepted}" th:if="${search.ebayCountry.returnsOnlyEnabled}" class="custom-control custom-checkbox">
+		               <input type="checkbox" class="custom-control-input" th:field="*{returnsAcceptedOnly}" >	
+		               <label class="custom-control-label" th:for="${#ids.prev('returnsAcceptedOnly')}" th:text="#{search.form.returns.accepted}"></label>
+		             </div>
+		             <br>
+		             <button type="submit" class="btn btn-primary" th:text="${update} ? #{search.form.update} : #{search.form.create}"></button>
+	             </div>
+				
+				
+			</form>
+		</div>
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+
+</body>
+
+<script>
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+	});
+	$('.date').datepicker({
+	    format: "dd.mm.yyyy",
+	    startDate: "+0d",
+	    multidate: false,
+	    autoclose: true,
+	    todayHighlight: true
+	});
+	
+	$('#ebayCountrySelect').change(function(){
+		console.log($('#ebayCountrySelect').val());
+		$('#searchForm').attr('action', $('#ebayCountrySelect').val());
+		$('#searchForm').attr('method', 'get');
+		$('#searchForm').submit();
+	});
+	
+</script>
+</html>

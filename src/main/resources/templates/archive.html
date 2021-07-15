@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{archive.title}">Archive</title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('archive')"></th:block>
+	
+	<div class="container">
+
+		<div class = "row row-selection">
+			<select class="selectpicker" data-width="fit" onchange="location = this.value">
+				<option th:selected="${selectedCategory == null}" th:value="@{/archive(allCategories=true)}">ALL</option>
+				<th:block th:each="category : ${categories}">
+					<option th:selected="${selectedCategory != null && selectedCategory.id == category.id}" th:value="@{/archive(category=${category.id})}" th:text="${category.name}"></option>
+		  		</th:block>
+			</select>
+		</div>
+		<div th:if="${page.numberOfElements > 0}" class ="row row-selection">
+			<ul class="pagination pagination-lg" style="float:right">
+				<li class="page-item" th:each="cnt: ${sizes}" th:classappend="${!displayCount.displayAll && displayCount.pageSize == cnt}? 'active' : '' ">
+			    	<a th:href="@{/archive(size=${cnt})}" class="page-link" th:text="${cnt}"></a>
+			    </li>
+                <li class="page-item" th:classappend="${displayCount.displayAll}? 'active' : '' ">
+                   <a th:href="@{/archive(all=true)}" class="page-link" th:text="All"></a>
+                </li>
+	        </ul>
+        </div>
+	        
+		<div class="row">
+			<div th:each="image : ${page.content}" class="col-md-4 col-archive">
+		  		<div class="card border-image-card mb-3" style="max-width: 20rem;">
+		             <div class="card-body card-body-nopadding">
+		             	<img th:src="@{/images/{pictureId}(pictureId=${image.id})}" class="img-archive" alt="image">
+		             </div>
+	             	 <div class="card-footer card-footer-nopadding">
+	             	 	<div class="row">
+	             	 		<div class="col">
+		                  		<i class="fab fa-ebay fa-2x" th:attr="ebay-link=${image.item.itemUrl}"></i>
+		                  	</div>
+		                  	<div class="col">
+		                  		<div style="float:right; padding-top:4%">
+		                  			<span data-toggle="tooltip" data-placement="left" th:attr="data-original-title=#{archive.remove.tooltip}">
+			                  			<i data-toggle="modal" th:attr="data-target='#modal-picture-'+${image.googleId}" class="fas fa-ban fa-lg btn-delete"></i>
+			                  		</span>
+		                  		</div>
+	                  		</div>
+	             	 	</div>
+	                 </div>
+        	    </div>
+        	    <div class="modal fade in" th:id="modal-picture-+${image.googleId}">
+				   <div class="modal-dialog" role="document">
+				      <div class="modal-content">
+				         <div class="modal-header">
+				            <h5 class="modal-title" th:text="#{archive.remove}"></h5>
+				            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				            	<span aria-hidden="true">×</span>
+				            </button>
+				         </div>
+				         <div class="modal-body">
+				         	<div th:if="${selectedCategory == null}">
+				         		<p th:text="#{archive.remove.global}"></p>
+				         	</div>
+				         	<div th:unless="${selectedCategory == null}">
+				         		<p th:text="#{archive.remove.local}"> </p>
+				         	</div>
+				         </div>
+				         <div class="modal-footer">
+					         	<div th:if="${selectedCategory == null}">
+						         	<form method="POST" th:action="@{/archive/delete/all/{imageId}(imageId=${image.googleId}) }">
+						         		<button type="submit" class="btn btn-primary btn-ban" th:text="#{archive.remove.global.prompt}"></button>
+						         	</form>					         	
+					         	</div>
+					         	<div th:unless="${selectedCategory == null}">
+       					         	<form method="POST" th:action="@{/archive/delete/{categoryId}/{imageId}(categoryId=${selectedCategory.id}, imageId=${image.googleId}) }">
+						         		<button type="submit" class="btn btn-primary btn-ban" th:text="#{archive.remove.local.prompt}"></button>
+						         	</form>
+					         	</div>
+				            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{modal.close}"></button>
+				         </div>
+				      </div>
+				   </div>
+				</div>
+			</div>
+		</div>
+		
+		<div  id="imageView" class="overlay-archive" style="display: none">
+			<img id="overlayImage" class="centered-archive" src="" alt="image">
+		</div>
+        
+        <div th:if="${page.totalPages > 1}">
+        	  <ul class="pagination pagination-lg">
+	          	<li th:if="${page.hasPrevious()}" class="page-item">
+			        <a th:href="@{/archive(page=${page.number-1})}" class="page-link">«</a>
+			    </li>
+			    
+			    <li th:if="${page.number != 0}" class="page-item">
+			    	<a th:href="@{/archive(page=0)}"  th:text="1" class="page-link"></a>
+			    </li>	
+			    
+			    <li class="page-item active">
+			    	<a th:href="@{/archive(page=${page.number})}"  th:text="${page.number + 1}" class="page-link"></a>
+			    </li>
+			    
+			    <li th:if="${page.number != (page.totalPages - 1)}" class="page-item">
+			    	<a th:href="@{/archive(page=${page.totalPages - 1})}" th:text="${page.totalPages}" class="page-link"></a>
+			    </li>	
+			    
+			    <li th:if="${page.hasNext()}" class="page-item">
+			        <a th:href="@{/archive(page=${page.number+1})}" class="page-link">»</a>
+			    </li>
+	          </ul>
+
+        </div>
+	
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+
+</body>
+<script>
+
+$(document).ready ( function(){
+	$('.fa-ebay').click(function(){
+		window.location.href = $(this).attr('ebay-link');
+	});
+	$('img').click(function(){
+		$('#overlayImage').attr('src', $(this).attr('src'));
+		$('#imageView').show();
+	});
+	$('#imageView').click(function(){
+		$(this).hide();
+	});
+	$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+	});
+});
+</script>
+
+</html>

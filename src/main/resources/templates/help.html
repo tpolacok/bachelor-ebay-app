@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{help.title}"></title>
+	<th:block th:include="fragments/includes :: header"></th:block>
+</head>
+<body>
+	<th:block th:include="fragments/includes :: nav('help')"></th:block>
+	
+	<div class="container">
+		<a class="help-link" href="#search_creation" th:text="#{help.search.create}"></a> <br>
+		<a class="help-link" href="#search_content" th:text="#{help.search.view}"></a> <br>
+		<a class="help-link" href="#search_edit" th:text="#{help.search.edit}"></a> <br>
+		<a class="help-link" href="#blacklist" th:text="#{help.search.blacklist}"></a> <br>
+		<a class="help-link" href="#archive" th:text="#{help.archive}"></a> <br>
+		<a class="help-link" href="#preferences" th:text="#{help.preferences}"></a> <br>
+		<br>
+		
+		<div id="search_creation" class="jumbotron settings-jumbotron">
+			<p class="help-link" th:text="#{help.search.create}"></p> <hr>
+			<p th:text="'1.' + #{help.search.create.1}"></p>
+			<p th:text="'2.' + #{help.search.create.2}"></p>
+			<img class="img-help" th:src="@{/img/search_creation_00.png}"/>
+			<p th:text="'3.' + #{help.search.create.3}"></p>
+			<p th:text="'4.' + #{help.search.create.4}"></p>
+			<p th:text="'5.' + #{help.search.create.5}"></p>
+			<img class="img-help" th:src="@{/img/search_creation_01.png}"/>
+		</div>
+		
+		<div id="search_content" class="jumbotron settings-jumbotron">
+			<p class="help-link" th:text="#{help.search.view}"></p> <hr>
+			<p th:text="'1.' + #{help.search.view.1}"></p>
+			<p th:text="'2.' + #{help.search.view.2}"></p>
+			<img class="img-help" th:src="@{/img/search_content_00.png}"/>
+			<img class="img-help" th:src="@{/img/search_content_01.png}"/>
+		</div>
+		
+		<div id="search_edit" class="jumbotron settings-jumbotron">
+			<p class="help-link" th:text="#{help.search.edit}"></p> <hr>
+			<p th:text="'1.' + #{help.search.edit.1}"></p>
+			<p th:text="'2.' + #{help.search.edit.2}"></p>
+			<p th:text="'3.' + #{help.search.edit.3}"></p>
+			<img class="img-help" th:src="@{/img/search_edit_00.png}"/>
+		</div>
+		
+		<div id="blacklist" class="jumbotron settings-jumbotron">
+			<p class="help-link" th:text="#{help.search.blacklist}"></p> <hr>
+			<p th:text="'1.' + #{help.search.blacklist.1}"></p>
+			<p th:text="'2.' + #{help.search.blacklist.2}"></p>
+			<p th:text="'3.' + #{help.search.blacklist.3}"></p>
+			<img class="img-help" th:src="@{/img/blacklist_00.png}"/>
+			<p th:text="'4.' + #{help.search.blacklist.4}"></p>
+			<p th:text="'5.' + #{help.search.blacklist.5}"></p>
+			<img class="img-help" th:src="@{/img/blacklist_01.png}"/>
+		</div>
+		
+		<div id="archive" class="jumbotron settings-jumbotron">
+			<p class="help-link" th:text="#{help.archive}"></p> <hr>
+			<p th:text="'1.' + #{help.archive.1}"></p>
+			<p th:text="'2.' + #{help.archive.2}"></p>
+			<img class="img-help" th:src="@{/img/archive_00.png}"/>
+			<p th:text="'3.' + #{help.archive.3}"></p>
+			<img class="img-help" th:src="@{/img/archive_01.png}"/>
+			<p th:text="'4.' + #{help.archive.4}"></p>
+			<p th:text="'5.' + #{help.archive.5}"></p>
+			<p th:text="'6.' + #{help.archive.6}"></p>
+			<img class="img-help" th:src="@{/img/archive_02.png}"/>
+			<img class="img-help" th:src="@{/img/archive_03.png}"/>
+		</div>
+		
+		<div id="preferences" class="jumbotron settings-jumbotron">
+			<p class="help-link" th:text="#{help.preferences}"></p> <hr>
+			<p th:text="'1.' + #{help.preferences.1}"></p>
+			<p th:text="'2.' + #{help.preferences.2}"></p>
+			<p th:text="'3.' + #{help.preferences.3}"></p>
+			<img class="img-help" th:src="@{/img/settings_00.png}"/>
+		</div>
+		
+	</div>
+	<th:block th:include="fragments/includes :: footer"></th:block>
+
+</body>
+</html>

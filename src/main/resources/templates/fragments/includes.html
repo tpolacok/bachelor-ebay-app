@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title></title>
+</head>
+<body>
+
+<div th:fragment="header">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/custom.css}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/css/bootstrap-select.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap-tagsinput.css}"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">   
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/unitegallery/1.7.40/css/unite-gallery.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/unitegallery/1.7.40/themes/default/ug-theme-default.min.css">
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+</div>
+
+<div th:fragment="nav(activeTab)">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+		  <a class="navbar-brand" href="#" th:text="#{navigation.name}"></a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+		    <span class="navbar-toggler-icon"></span>
+		  </button>
+		  <div id="navbar" class="collapse navbar-collapse">
+		    <ul class="navbar-nav mr-auto">
+		      <li class="nav-item" th:classappend="${activeTab == 'search'}? active : '' ">
+		        <a class="nav-link" th:href="@{/search}" th:text="#{navigation.search}"></a>
+		      </li>
+		      <li class="nav-item" th:classappend="${activeTab == 'blacklist'}? active : '' ">
+		        <a class="nav-link" th:href="@{/blacklist/sellers}" th:text="#{navigation.blacklist}"></a>
+		      </li>
+		      <li class="nav-item" th:classappend="${activeTab == 'archive'}? active : '' ">
+		        <a class="nav-link" th:href="@{/archive}" th:text="#{navigation.archive}"></a>
+		      </li>
+		      <li class="nav-item" th:classappend="${activeTab == 'settings'}? active : '' ">
+		        <a class="nav-link" th:href="@{/settings}" th:text="#{navigation.settings}"></a>
+		      </li>
+		      <li class="nav-item" th:classappend="${activeTab == 'help'}? active : '' ">
+		        <a class="nav-link" th:href="@{/help}" th:text="#{navigation.help}"></a>
+		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" th:href="@{/logout}" th:text="#{navigation.logout}"></a>
+		      </li>
+		    </ul>
+		  </div>
+		</nav>
+</div>
+
+<div th:fragment="deleteSearch(id)">
+	
+	<div class="modal fade in" th:id="'modal-remove-'+${id}">
+	    <div class="modal-dialog" role="document">
+	      <div class="modal-content">
+	         <div class="modal-header">
+	            <h5 class="modal-title" th:text="#{search.delete.modal.title}"></h5>
+	            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            	<span aria-hidden="true">×</span>
+	            </button>
+	         </div>
+	         <div class="modal-body">
+	            <p th:text="#{search.delete.modal.message}"></p>
+	         </div>
+	         <div class="modal-footer">
+	         	<form class="form-delete" method="POST" th:action="@{/search/delete/{searchId}(searchId=${id})}">
+	            	<button type="submit" class="btn btn-primary btn-form" th:text="#{search.delete.modal.prompt}"></button>
+	            </form> 	
+	            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{modal.close}"></button>
+	         </div>
+	      </div>
+	    </div>
+	  </div>
+
+</div>
+
+<div th:fragment="activateSearch(id,active,inView)">
+	
+	<div class="modal fade in" th:id="'modal-activate-'+${id}">
+	    <div class="modal-dialog" role="document">
+	      <div class="modal-content">
+	         <div class="modal-header">
+	         	<h5 th:if="${active}" class="modal-title" th:text="#{search.activation.modal.title.pause}"></h5>
+	            <h5 th:unless="${active}" class="modal-title" th:text="#{search.activation.modal.title.unpause}"></h5>
+	            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            	<span aria-hidden="true">×</span>
+	            </button>
+	         </div>
+	         <div class="modal-body">
+	            <p th:if="${active}" th:text="#{search.activation.modal.message.pause}"></p>
+	            <p th:unless="${active}" th:text="#{search.activation.modal.message.unpause}"></p>
+	         </div>
+	         <div class="modal-footer">
+		         <form class="form-activate" method="POST" th:action="@{/search/activate/{searchId}(searchId=${id}, in=${inView})}">
+		         	<button th:if="${active}" type="submit" class="btn btn-primary btn-form" th:text="#{search.activation.modal.prompt.pause}"></button>
+		         	<button th:unless="${active}" type="submit" class="btn btn-primary btn-form" th:text="#{search.activation.modal.prompt.unpause}"></button>
+		         </form>
+	            <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{modal.close}"></button>
+	         </div>
+	      </div>
+	    </div>
+	  </div>
+
+</div>
+
+<div th:fragment="notificationSearch(search)">
+	<div class="modal fade in" th:id="'modal-notification-'+${search.id}">
+	   <div class="modal-dialog" role="document">
+	     <div class="modal-content">
+	        <div class="modal-header">
+	           <h5 class="modal-title" th:text="#{search.notification.modal.title}"></h5>
+	           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	           	<span aria-hidden="true">×</span>
+	           </button>
+	        </div>
+	        <div class="modal-body">
+	        	<div class="custom-control custom-checkbox custom-checkbox-main">
+			       <input th:id="'notifications-'+${search.id}" type="checkbox" class="notificationEnabled custom-control-input" th:checked="${search.phoneNotificationSettings.notificationsEnabled}" >	
+			       <label class="custom-control-label" th:for="'notifications-'+${search.id}" th:text="#{settings.preferences.notification.enable}"></label>
+			    </div>
+		     
+		     <div th:id="'notificationsSettings-'+${search.id}">
+		         <div class="custom-control custom-checkbox">
+			       <input th:id="'notificationsAuction-'+${search.id}" type="checkbox" class="custom-control-input" th:checked="${search.phoneNotificationSettings.notificationsAuction}">	
+			       <label class="custom-control-label" th:for="'notificationsAuction-'+${search.id}" th:text="#{settings.preferences.notification.auction}"></label>
+			     </div>
+			     <div class="custom-control custom-checkbox">
+			       <input th:id="'notificationsBuyItNow-'+${search.id}" type="checkbox" class="custom-control-input" th:checked="${search.phoneNotificationSettings.notificationsAuctionBuyItNow}">	
+			       <label class="custom-control-label" th:for="'notificationsBuyItNow-'+${search.id}" th:text="#{settings.preferences.notification.auction.bin}"></label>
+			     </div>
+			     <div class="custom-control custom-checkbox">
+			       <input th:id="'notificationsFixed-'+${search.id}" type="checkbox" class="custom-control-input" th:checked="${search.phoneNotificationSettings.notificationsBuyItNow}">	
+			       <label class="custom-control-label" th:for="'notificationsFixed-'+${search.id}" th:text="#{settings.preferences.notification.fixed}"></label>
+			     </div>
+			 </div>
+	        </div>
+	        <div class="modal-footer">
+	           <button th:id="'notificationsButton-'+${search.id}" type="submit" class="btn btn-primary notificationsButton" th:text="#{search.notification.save}"></button>
+	        </div>
+	     </div>
+	   </div>
+	</div>
+
+</div>
+
+<div th:fragment="notificationScript">
+	<script th:inline="javascript">
+
+	/*<![CDATA[*/
+	var context = [[@{/}]];
+	/*]]>*/
+	
+	$(document).ready ( function(){
+		if (!$('#notificationsEnabled1').prop('checked')) {
+			$('#notificationsSettings').hide();
+		};
+		
+		$('.notificationEnabled').each(function(){
+			var id = ($(this).attr('id').split('-'))[1];
+			if (!$(this).prop('checked')) {
+				$('#notificationsSettings-' + id).hide();
+			}
+		});
+	});
+	
+	$('.notificationsButton').click(function() {
+		var id = ($(this).attr('id').split('-'))[1];
+		var notificationEnabled = $('#notifications-' + id).prop('checked');
+		var auction = $('#notificationsAuction-' + id).prop('checked');
+		var buyItNow = $('#notificationsBuyItNow-' + id).prop('checked');
+		var fixed = $('#notificationsFixed-' + id).prop('checked');
+		$.ajax({
+		    url: context + "search/notification/" + id,
+		    type: 'post',
+		    data: {
+		    	notifications : notificationEnabled,
+				auction : auction,
+				buyItNow : buyItNow,
+				fixed : fixed
+		    },
+		    success: function(response) {
+		    	$('#modal-notification-' + id).modal('hide');
+		    }
+		  });
+	});
+	
+	$('.custom-checkbox').click(function(event){
+		var inp = $(this).children('input');
+		if (inp.is(":checked")) {
+			inp.prop('checked', false);
+		} else {
+			inp.prop('checked', true);
+		}
+		if($(this).hasClass('custom-checkbox-main')) {
+			var id = (inp.attr('id').split('-'))[1];
+			if (inp.is(":checked")) {
+				console.log('yes');
+				$('#notificationsSettings-' + id).show();
+			} else {
+				console.log('no');
+				$('#notificationsSettings-' + id).hide();
+			}
+		}
+	});
+	
+	</script>
+</div>
+
+<div th:fragment="footer">
+		<div class="footer-transparent">
+			<a th:href="@{/privacy}">Privacy Policy</a>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/js/bootstrap-select.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
+		<script th:src="@{/js/bootstrap-tagsinput.js}"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>	
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/unitegallery/1.7.40/js/unitegallery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/unitegallery/1.7.40/themes/compact/ug-theme-compact.min.js"></script>
+</div>
+
+
+</body>
+</html>
